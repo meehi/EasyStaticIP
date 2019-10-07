@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
-namespace DigitalOceanAPI
+namespace StaticIpAPI
 {
     public class Client
     {
@@ -38,13 +38,6 @@ namespace DigitalOceanAPI
             Host = host;
             Username = username;
             Password = password;
-
-            if (!string.IsNullOrEmpty(Host))
-            {
-                if (Host.Substring(Host.Length - 1, 1) != "/")
-                    Host += "/";
-                Host += "api.php";
-            }
         }
 
         #endregion
@@ -54,19 +47,19 @@ namespace DigitalOceanAPI
         public bool RequestVpnOn()
         {
             string url = string.Format("{0}?method={1}", Host, "request_vpn_on");
-            return TryGet(url, out string responseString);
+            return TryGet(url, out _);
         }
 
         public bool RequestVpnOff()
         {
             string url = string.Format("{0}?method={1}", Host, "request_vpn_off");
-            return TryGet(url, out string responseString);
+            return TryGet(url, out _);
         }
 
         public bool SetRemoteServerStatus(string value)
         {
             string url = string.Format("{0}?method={1}&remote_value={2}", Host, "set_remote_server_status", value);
-            return TryGet(url, out string responseString);
+            return TryGet(url, out _);
         }
 
         public RequestStatus CheckRequestStatus()
@@ -119,9 +112,7 @@ namespace DigitalOceanAPI
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 using (Stream stream = response.GetResponseStream())
                 using (StreamReader reader = new StreamReader(stream))
-                {
                     responseString = reader.ReadToEnd();
-                }
 
                 return true;
             }

@@ -1,6 +1,6 @@
 ﻿using DataModel;
-using DigitalOceanAPI;
 using Helper;
+using StaticIpAPI;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;

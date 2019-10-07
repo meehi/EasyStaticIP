@@ -1,14 +1,14 @@
 ﻿using Newtonsoft.Json;
 
-namespace DigitalOceanAPI
+namespace StaticIpAPI
 {
     public class RequestStatus
     {
         [JsonProperty("id")]
         public int Id { get; set; }
-        [JsonProperty("request_vpn_status")]
+        [JsonProperty("request_vpn_status"), JsonConverter(typeof(BoolConverter))]
         public bool RequestVpnStatus { get; set; }
-        [JsonProperty("remote_server_connected")]
+        [JsonProperty("remote_server_connected"), JsonConverter(typeof(BoolConverter))]
         public bool RemoteServerConnected { get; set; }
     }
 }

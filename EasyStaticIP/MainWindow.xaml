@@ -30,7 +30,7 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Text="DigitalOcean API:" VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" />
+        <TextBlock Text="StaticIP API:" VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" />
         <TextBlock Text="Username:" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" />
         <TextBlock Text="Password:" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" />
         <TextBlock Text="Windows VPN:" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" />
@@ -53,7 +53,7 @@
         <CheckBox IsChecked="{Binding ViewModel.AutoStartWithWindows, Mode=TwoWay}" Margin="10" Grid.Row="6" Grid.Column="2" />
         <CheckBox IsChecked="{Binding ViewModel.ServerMode, Mode=TwoWay}" Margin="10" Grid.Row="7" Grid.Column="2" />
         
-        <TextBlock Text="(API interface end point to your webserivce e.g.: http://xx.xx.xx.xx/digitalocean)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="0" Grid.Column="3" />
+        <TextBlock Text="(API interface end point to your webserivce e.g.: http://xx.xx.xx.xx/staticip/api.php)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="0" Grid.Column="3" />
         <TextBlock Text="(Basic AUTH username)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="1" Grid.Column="3" />
         <TextBlock Text="(Basic AUTH password)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="2" Grid.Column="3" />
         <TextBlock Text="(select the PPTP vpn that you have previously configured)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="3" Grid.Column="3" />
