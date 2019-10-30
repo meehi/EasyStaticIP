@@ -255,7 +255,7 @@ namespace EasyStaticIP
             _serverTimer.Start();
         }
 
-        private async void ServerTimer_Tick(object sender, EventArgs e)
+        private void ServerTimer_Tick(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(ViewModel.SelectedVpnFriendlyName) &&
                 !string.IsNullOrEmpty(ViewModel.VpnUsername) &&
@@ -314,27 +314,30 @@ namespace EasyStaticIP
                             VideoCapture capture = new VideoCapture(ViewModel.CameraSource);
                             Stopwatch fpsStopper = new Stopwatch();
                             _streamCts = new CancellationTokenSource();
-                            while (!_streamCts.IsCancellationRequested)
+                            Task.Run(async () =>
                             {
-                                try
+                                while (!_streamCts.IsCancellationRequested)
                                 {
-                                    fpsStopper.Restart();
-                                    using (Image<Bgr, byte> frame = CaptureBGR(capture))
+                                    try
                                     {
-                                        _streamer.AddImage(frame.Bitmap);
-                                    }
+                                        fpsStopper.Restart();
+                                        using (Image<Bgr, byte> frame = CaptureBGR(capture))
+                                        {
+                                            _streamer.AddImage(frame.Bitmap);
+                                        }
 
-                                    int elapsedMilliseconds = (int)fpsStopper.ElapsedMilliseconds;
-                                    if (elapsedMilliseconds < (1000 / ViewModel.FPS))
+                                        int elapsedMilliseconds = (int)fpsStopper.ElapsedMilliseconds;
+                                        if (elapsedMilliseconds < (1000 / ViewModel.FPS))
+                                        {
+                                            await Task.Delay((1000 / ViewModel.FPS) - elapsedMilliseconds);
+                                        }
+                                    }
+                                    catch
                                     {
-                                        await Task.Delay((1000 / ViewModel.FPS) - elapsedMilliseconds);
                                     }
                                 }
-                                catch
-                                {
-                                }
-                            }
-                            capture.Dispose();
+                                capture.Dispose();
+                            });
                         }
                     }
                     else
