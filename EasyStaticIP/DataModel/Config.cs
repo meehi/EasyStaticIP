@@ -1,46 +1,54 @@
 ﻿using Helper;
 using Newtonsoft.Json;
 using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace DataModel
+namespace EasyStaticIP.DataModel
 {
-    public class Config : INotifyPropertyChanged
+    public class Config : ObservableObject
     {
         #region Contants
 
-        private static string SETTINGS_PATH = Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)).FullName + @"\Local\EasyStaticIP\setting.json";
-        private static string MAGIC_KEY = "kjklsd324cxiow";
+        private static readonly string SETTINGS_PATH = Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)).FullName + @"\Local\EasyStaticIP\setting.json";
+        private static readonly string MAGIC_KEY = "kjklsd324cxiow";
 
         #endregion
 
         #region Properties
 
         private string _host;
-        public string Host { get { return _host; } set { _host = value; NotifyPropertyChanged(); } }
+        public string Host { get { return _host; } set { SetProperty(ref _host, value); } }
         private string _username;
-        public string Username { get { return _username; } set { _username = value; NotifyPropertyChanged(); } }
+        public string Username { get { return _username; } set { SetProperty(ref _username, value); } }
         private string _password;
-        public string Password { get { return _password; } set { _password = value; NotifyPropertyChanged(); } }
+        public string Password { get { return _password; } set { SetProperty(ref _password, value); } }
         private string _selectedVpnFriendlyName;
-        public string SelectedVpnFriendlyName { get { return _selectedVpnFriendlyName; } set { _selectedVpnFriendlyName = value; NotifyPropertyChanged(); } }
+        public string SelectedVpnFriendlyName { get { return _selectedVpnFriendlyName; } set { SetProperty(ref _selectedVpnFriendlyName, value); } }
         private string _vpnUsername;
-        public string VpnUsername { get { return _vpnUsername; } set { _vpnUsername = value; NotifyPropertyChanged(); } }
+        public string VpnUsername { get { return _vpnUsername; } set { SetProperty(ref _vpnUsername, value); } }
         private string _vpnPassword;
-        public string VpnPassword { get { return _vpnPassword; } set { _vpnPassword = value; NotifyPropertyChanged(); } }
+        public string VpnPassword { get { return _vpnPassword; } set { SetProperty(ref _vpnPassword, value); } }
         private bool _autoStartWithWindows;
-        public bool AutoStartWithWindows { get { return _autoStartWithWindows; } set { _autoStartWithWindows = value; NotifyPropertyChanged(); } }
+        public bool AutoStartWithWindows { get { return _autoStartWithWindows; } set { SetProperty(ref _autoStartWithWindows, value); } }
         private bool _serverMode;
-        public bool ServerMode { get { return _serverMode; } set { _serverMode = value; NotifyPropertyChanged(); NotifyPropertyChanged("ComputersEnabled"); } }
+        public bool ServerMode { get { return _serverMode; } set { SetProperty(ref _serverMode, value); } }
 
-        private ObservableCollection<string> _vpnConnections;
+        private string _cameraSource;
+        public string CameraSource { get { return _cameraSource; } set { SetProperty(ref _cameraSource, value); } }
+        private string _pushUrl;
+        public string PushUrl { get { return _pushUrl; } set { SetProperty(ref _pushUrl, value); } }
+        private int _width;
+        public int Width { get { return _width; } set { SetProperty(ref _width, value); } }
+        private int _height;
+        public int Height { get { return _height; } set { SetProperty(ref _height, value); } }
+        private int _fps;
+        public int FPS { get { return _fps; } set { SetProperty(ref _fps, value); } }
+
+        private ObservableRangeCollection<string> _vpnConnections;
         [JsonIgnore]
-        public ObservableCollection<string> VpnConnections { get { return _vpnConnections; } set { _vpnConnections = value; NotifyPropertyChanged(); } }
+        public ObservableRangeCollection<string> VpnConnections { get { return _vpnConnections; } set { SetProperty(ref _vpnConnections, value); } }
 
         #endregion
 
@@ -48,7 +56,7 @@ namespace DataModel
 
         public Config()
         {
-            this.VpnConnections = new ObservableCollection<string>
+            this.VpnConnections = new ObservableRangeCollection<string>
             {
                 ""
             };
@@ -57,12 +65,6 @@ namespace DataModel
         #endregion
 
         #region Public methods
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
 
         public static void ReadConfig()
         {

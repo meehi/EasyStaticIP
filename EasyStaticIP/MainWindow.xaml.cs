@@ -1,9 +1,15 @@
-﻿using DataModel;
+﻿using EasyStaticIP.DataModel;
+using Emgu.CV;
+using Emgu.CV.Structure;
 using Helper;
+using RtmpStreamer;
 using StaticIpAPI;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -16,10 +22,12 @@ namespace EasyStaticIP
     /// </summary>
     public partial class MainWindow : Window
     {
-        private bool _close;
-        private bool _requestInProgress;
+        private bool _close, _requestInProgress, _cameraStarted;
         private ContextMenu _contextMenu;
         private DispatcherTimer _serverTimer;
+        private Client _client;
+        private BitmapStreamer _streamer;
+        private CancellationTokenSource _streamCts;
 
         public Config ViewModel { get; set; }
 
@@ -124,6 +132,13 @@ namespace EasyStaticIP
                 requestVpnOff.Click += RequestVpn_OnOrOff_Click;
                 _contextMenu.Items.Add(requestVpnOff);
                 _contextMenu.Items.Add(new Separator());
+                MenuItem startStopIPCamera = new MenuItem()
+                {
+                    Header = "Start IP camera"
+                };
+                startStopIPCamera.Click += StartStopIPCamera_Click;
+                _contextMenu.Items.Add(startStopIPCamera);
+                _contextMenu.Items.Add(new Separator());
             }
             MenuItem exitMenuItem = new MenuItem()
             {
@@ -210,8 +225,28 @@ namespace EasyStaticIP
             }
         }
 
+        private void StartStopIPCamera_Click(object sender, RoutedEventArgs e)
+        {
+            Client client = new Client(ViewModel.Host, ViewModel.Username, ViewModel.Password);
+            if (!_cameraStarted)
+            {
+                ((MenuItem)sender).Header = "Stop IP camera";
+                _cameraStarted = true;
+                client.RequestIPCameraOn();
+            }
+            else
+            {
+                ((MenuItem)sender).Header = "Start IP camera";
+                _cameraStarted = false;
+                client.RequestIPCameraOff();
+            }
+            taskbarIcon.ShowBalloonTip("Request sent", "Request has been sent to server", Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
+        }
+
         private void StartListening()
         {
+            _client = new Client(ViewModel.Host, ViewModel.Username, ViewModel.Password);
+            _streamer = new BitmapStreamer();
             _serverTimer = new DispatcherTimer()
             {
                 Interval = TimeSpan.FromSeconds(20)
@@ -220,40 +255,113 @@ namespace EasyStaticIP
             _serverTimer.Start();
         }
 
-        private void ServerTimer_Tick(object sender, EventArgs e)
+        private async void ServerTimer_Tick(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(ViewModel.SelectedVpnFriendlyName) || 
-                string.IsNullOrEmpty(ViewModel.VpnUsername) ||
-                string.IsNullOrEmpty(ViewModel.VpnPassword))
-                return;
+            if (!string.IsNullOrEmpty(ViewModel.SelectedVpnFriendlyName) &&
+                !string.IsNullOrEmpty(ViewModel.VpnUsername) &&
+                !string.IsNullOrEmpty(ViewModel.VpnPassword))
+            {
+                try
+                {
+                    RasEntry entry = new RasEntry()
+                    {
+                        FriendlyName = ViewModel.SelectedVpnFriendlyName,
+                        UserName = ViewModel.VpnUsername,
+                        Password = ViewModel.VpnPassword
+                    };
+                    RequestStatus result = _client.CheckRequestStatus();
+                    if (result.RequestVpnStatus)
+                    {
+                        if (!entry.Connected)
+                            if (entry.Connect())
+                                if (!result.RemoteServerConnected)
+                                    _client.SetRemoteServerStatus("1");
+                    }
+                    else
+                    {
+                        if (entry.Connected)
+                            if (entry.Disconnect())
+                                if (result.RemoteServerConnected)
+                                    _client.SetRemoteServerStatus("0");
+                    }
+                }
+                catch
+                {
+                }
+            }
 
+            if (!string.IsNullOrEmpty(ViewModel.CameraSource) && !string.IsNullOrEmpty(ViewModel.PushUrl))
+            {
+                try
+                {
+                    RequestStatus result = _client.CheckRequestStatus();
+                    if (result.RequestIPCamera)
+                    {
+                        if (!_streamer.IsStarted)
+                        {
+                            RtmpConfig rtmpConfig = new RtmpConfig()
+                            {
+                                Width = ViewModel.Width,
+                                Height = ViewModel.Height,
+                                FrameRate = ViewModel.FPS
+                            };
+                            _streamer = new BitmapStreamer
+                            {
+                                PushUrl = ViewModel.PushUrl,
+                                Config = rtmpConfig
+                            };
+                            _streamer.StartPush();
+                            VideoCapture capture = new VideoCapture(ViewModel.CameraSource);
+                            Stopwatch fpsStopper = new Stopwatch();
+                            _streamCts = new CancellationTokenSource();
+                            while (!_streamCts.IsCancellationRequested)
+                            {
+                                try
+                                {
+                                    fpsStopper.Restart();
+                                    using (Image<Bgr, byte> frame = CaptureBGR(capture))
+                                    {
+                                        _streamer.AddImage(frame.Bitmap);
+                                    }
+
+                                    int elapsedMilliseconds = (int)fpsStopper.ElapsedMilliseconds;
+                                    if (elapsedMilliseconds < (1000 / ViewModel.FPS))
+                                    {
+                                        await Task.Delay((1000 / ViewModel.FPS) - elapsedMilliseconds);
+                                    }
+                                }
+                                catch
+                                {
+                                }
+                            }
+                            capture.Dispose();
+                        }
+                    }
+                    else
+                    {
+                        if (_streamer.IsStarted)
+                        {
+                            _streamCts.Cancel();
+                            _streamer.Stop();
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        [System.Runtime.ExceptionServices.HandleProcessCorruptedStateExceptions()]
+        private static Image<Bgr, byte> CaptureBGR(VideoCapture capture)
+        {
             try
             {
-                RasEntry entry = new RasEntry()
-                {
-                    FriendlyName = ViewModel.SelectedVpnFriendlyName,
-                    UserName = ViewModel.VpnUsername,
-                    Password = ViewModel.VpnPassword
-                };
-                Client client = new Client(ViewModel.Host, ViewModel.Username, ViewModel.Password);
-                RequestStatus result = client.CheckRequestStatus();
-                if (result.RequestVpnStatus)
-                {
-                    if (!entry.Connected)
-                        if (entry.Connect())
-                            if (!result.RemoteServerConnected)
-                                client.SetRemoteServerStatus("1");
-                }
-                else
-                {
-                    if (entry.Connected)
-                        if (entry.Disconnect())
-                            if (result.RemoteServerConnected)
-                                client.SetRemoteServerStatus("0");
-                }
+                return capture.QueryFrame().ToImage<Bgr, byte>();
             }
             catch
             {
+                return null;
             }
         }
 

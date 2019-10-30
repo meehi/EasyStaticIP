@@ -56,6 +56,18 @@ namespace StaticIpAPI
             return TryGet(url, out _);
         }
 
+        public bool RequestIPCameraOn()
+        {
+            string url = string.Format("{0}?method={1}", Host, "request_ip_camera_on");
+            return TryGet(url, out _);
+        }
+
+        public bool RequestIPCameraOff()
+        {
+            string url = string.Format("{0}?method={1}", Host, "request_ip_camera_off");
+            return TryGet(url, out _);
+        }
+
         public bool SetRemoteServerStatus(string value)
         {
             string url = string.Format("{0}?method={1}&remote_value={2}", Host, "set_remote_server_status", value);

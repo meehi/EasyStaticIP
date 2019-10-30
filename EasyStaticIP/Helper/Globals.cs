@@ -1,4 +1,4 @@
-﻿using DataModel;
+﻿using EasyStaticIP.DataModel;
 
 namespace Helper
 {

@@ -9,59 +9,103 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
-        Height="425" Width="850">
+        Height="460" Width="810">
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="5" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
 
-        <TextBlock Text="StaticIP API:" VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" />
-        <TextBlock Text="Username:" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" />
-        <TextBlock Text="Password:" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" />
-        <TextBlock Text="Windows VPN:" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" />
-        <TextBlock Text="Windows VPN username:" VerticalAlignment="Center" Grid.Row="4" Grid.Column="1" />
-        <TextBlock Text="Windows VPN passsword:" VerticalAlignment="Center" Grid.Row="5" Grid.Column="1" />
-        <TextBlock Text="Auto start with Windows:" VerticalAlignment="Center" Grid.Row="6" Grid.Column="1" />
-        <TextBlock Text="Server mode:" VerticalAlignment="Center" Grid.Row="7" Grid.Column="1" />
+        <TabControl Height="380" Grid.Row="0" Margin="5">
+            <TabItem Header="VPN">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-        <TextBox Text="{Binding ViewModel.Host, Mode=TwoWay}" Width="200" Margin="10" Grid.Row="0" Grid.Column="2" />
-        <TextBox Text="{Binding ViewModel.Username, Mode=TwoWay}" Width="200" Margin="10" Grid.Row="1" Grid.Column="2" />
-        <PasswordBox x:Name="txtPassword" Width="200" Margin="10" Grid.Row="2" Grid.Column="2" />
-        <ComboBox x:Name="comboVpnConnections"
-                  ItemsSource="{Binding ViewModel.VpnConnections}"
-                  Margin="10"
-                  Grid.Row="3"
-                  Grid.Column="2"
-                  SelectionChanged="VpnConnections_SelectionChanged"/>
-        <TextBox Text="{Binding ViewModel.VpnUsername, Mode=TwoWay}" Width="200" Margin="10" Grid.Row="4" Grid.Column="2" />
-        <PasswordBox x:Name="txtVpnPassword" Width="200" Margin="10" Grid.Row="5" Grid.Column="2" />
-        <CheckBox IsChecked="{Binding ViewModel.AutoStartWithWindows, Mode=TwoWay}" Margin="10" Grid.Row="6" Grid.Column="2" />
-        <CheckBox IsChecked="{Binding ViewModel.ServerMode, Mode=TwoWay}" Margin="10" Grid.Row="7" Grid.Column="2" />
-        
-        <TextBlock Text="(API interface end point to your webserivce e.g.: http://xx.xx.xx.xx/staticip/api.php)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="0" Grid.Column="3" />
-        <TextBlock Text="(Basic AUTH username)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="1" Grid.Column="3" />
-        <TextBlock Text="(Basic AUTH password)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="2" Grid.Column="3" />
-        <TextBlock Text="(select the PPTP vpn that you have previously configured)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="3" Grid.Column="3" />
-        <TextBlock Text="(PPTP username)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="4" Grid.Column="3" />
-        <TextBlock Text="(PPTP password)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="5" Grid.Column="3" />
-        <TextBlock Text="(check this if you plan to use this computer as your home server)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="7" Grid.Column="3" />
+                    <TextBlock Text="StaticIP API:" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" />
+                    <TextBlock Text="Username:" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" />
+                    <TextBlock Text="Password:" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" />
+                    <TextBlock Text="Windows VPN:" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0" />
+                    <TextBlock Text="Windows VPN username:" VerticalAlignment="Center" Grid.Row="4" Grid.Column="0" />
+                    <TextBlock Text="Windows VPN passsword:" VerticalAlignment="Center" Grid.Row="5" Grid.Column="0" />
+                    <TextBlock Text="Auto start with Windows:" VerticalAlignment="Center" Grid.Row="6" Grid.Column="0" />
+                    <TextBlock Text="Server mode:" VerticalAlignment="Center" Grid.Row="7" Grid.Column="0" />
 
-        <Button Content="Save and Close" VerticalAlignment="Center" Height="30" Grid.Row="8" Grid.Column="1" Click="SaveAndClose_Click" />
+                    <TextBox Text="{Binding ViewModel.Host, Mode=TwoWay}" Width="200" Margin="10" Grid.Row="0" Grid.Column="1" />
+                    <TextBox Text="{Binding ViewModel.Username, Mode=TwoWay}" Width="200" Margin="10" Grid.Row="1" Grid.Column="1" />
+                    <PasswordBox x:Name="txtPassword" Width="200" Margin="10" Grid.Row="2" Grid.Column="1" />
+                    <ComboBox x:Name="comboVpnConnections"
+                              ItemsSource="{Binding ViewModel.VpnConnections}"
+                              Margin="10"
+                              Grid.Row="3"
+                              Grid.Column="1"
+                              SelectionChanged="VpnConnections_SelectionChanged"/>
+                    <TextBox Text="{Binding ViewModel.VpnUsername, Mode=TwoWay}" Width="200" Margin="10" Grid.Row="4" Grid.Column="1" />
+                    <PasswordBox x:Name="txtVpnPassword" Width="200" Margin="10" Grid.Row="5" Grid.Column="1" />
+                    <CheckBox IsChecked="{Binding ViewModel.AutoStartWithWindows, Mode=TwoWay}" Margin="10" Grid.Row="6" Grid.Column="1" />
+                    <CheckBox IsChecked="{Binding ViewModel.ServerMode, Mode=TwoWay}" Margin="10" Grid.Row="7" Grid.Column="1" />
+
+                    <TextBlock Text="(API interface end point to your webserivce e.g.: http://xx.xx.xx.xx/api.php)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="0" Grid.Column="2" />
+                    <TextBlock Text="(Basic AUTH username)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="1" Grid.Column="2" />
+                    <TextBlock Text="(Basic AUTH password)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="2" Grid.Column="2" />
+                    <TextBlock Text="(select the PPTP vpn that you have previously configured)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="3" Grid.Column="2" />
+                    <TextBlock Text="(PPTP username)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="4" Grid.Column="2" />
+                    <TextBlock Text="(PPTP password)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="5" Grid.Column="2" />
+                    <TextBlock Text="(check this if you plan to use this computer as your home server)" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="7" Grid.Column="2" />
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="IP camera">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Camera source (rtsp):" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" />
+                    <TextBlock Text="Push url (rtmp):" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" />
+                    <TextBlock Text="Width:" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" />
+                    <TextBlock Text="Height:" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0" />
+                    <TextBlock Text="FPS:" VerticalAlignment="Center" Grid.Row="4" Grid.Column="0" />
+
+                    <TextBox Text="{Binding ViewModel.CameraSource, Mode=TwoWay}" Width="500" Margin="10" Grid.Row="0" Grid.Column="1" />
+                    <TextBox Text="{Binding ViewModel.PushUrl, Mode=TwoWay}" Width="500" Margin="10" Grid.Row="1" Grid.Column="1" />
+                    <TextBox Text="{Binding ViewModel.Width, Mode=TwoWay}" Width="500" Margin="10" Grid.Row="2" Grid.Column="1" />
+                    <TextBox Text="{Binding ViewModel.Height, Mode=TwoWay}" Width="500" Margin="10" Grid.Row="3" Grid.Column="1" />
+                    <TextBox Text="{Binding ViewModel.FPS, Mode=TwoWay}" Width="500" Margin="10" Grid.Row="4" Grid.Column="1" />
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <Button Content="Save and Close"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Height="30"
+                Grid.Row="1"
+                Click="SaveAndClose_Click" />
+
         <tb:TaskbarIcon x:Name="taskbarIcon"
                         IconSource="tray_icon.ico"
                         TrayMouseDoubleClick="Tray_MouseDoubleClick" />
